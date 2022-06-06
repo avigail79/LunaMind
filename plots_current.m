@@ -79,23 +79,24 @@ for s = 1:length(subj_num)
     % markers_type = unique(out_data(:,2));
 
     %% button pressed and video state
-    out_button = zeros(1,2);
+    %     out_button = zeros(1,2);
+    out_button = [];
     video_state = zeros(1,3);
     j = 0;
     v = 0;
     for i=1:size(out_data,1)
-        if size(out_data{i,3},2) == size('button_pressed',2)
+        if strcmp(out_data{i,3},'button_pressed')
             j = j+1;
             out_button(j,1) = i; %save the row index
             out_button(j,2) = out_data{i,1}; % save the time
         end
-        if size(out_data{i,3},2) == size('video_state',2)
+        if strcmp(out_data{i,3},'video_state')
             v = v+1;
             video_state(v,1) = i; %save the row index
             video_state(v,2) = out_data{i,1}; % save the time
-            if size(out_data{i,4},2) == size('video_pause', 2)
+            if strcmp(out_data{i,4},'video_pause')
                 video_state(v,3) = 0;
-            elseif size(out_data{i,4},2) == size('video_play', 2)
+            elseif strcmp(out_data{i,4},'video_play')
                 if out_data{i,4} == 'video_play'
                     video_state(v,3) = 1;
                 end
@@ -113,7 +114,7 @@ for s = 1:length(subj_num)
     before_pressed = zeros(ms_time+1, length(out_button)); % time before the pressed
     after_pressed = zeros(ms_time+1, length(out_button)); % time after the pressed
     after_start_video = zeros(ms_time+1, length(out_button));% time after video play
-    for b = 1:length(out_button)-1
+    for b = 1:length(out_button)
         time_preseed_raw_idx = find(alpha_raw > out_button(b,2)); % find the closet bottom pressed idx in raw (1)
 
         time_play_out_idx = find(video_state_start(:,2) > out_button(b,2)); % find the idx time of the start video after button pressed in out
@@ -142,19 +143,19 @@ for s = 1:length(subj_num)
     All = [before_pressed;after_pressed];
     edges = 0:max(All(:))/20:max(All(:));
 
+    if before_pressed
+        [N_before(s,:), edges_before(s,:), N_after(s,:), edges_after(s,:)] = plot_before_and_after_pressed(subj_num(s), edges, before_pressed, after_pressed, ms_time);
+        Max(s,1) = edges_before(s,(find(N_before(s,:) == max(N_before(s,:)),1,'first'))+1);
 
-    [N_before(s,:), edges_before(s,:), N_after(s,:), edges_after(s,:)] = plot_before_and_after_pressed(subj_num(s), edges, before_pressed, after_pressed, ms_time);
-    Max(s,1) = edges_before(s,(find(N_before(s,:) == max(N_before(s,:)),1,'first'))+1);
-
-    Max(s,2) = edges_after(s,(find(N_after(s,:) == max(N_after(s,:)),1,'first'))+1);
+        Max(s,2) = edges_after(s,(find(N_after(s,:) == max(N_after(s,:)),1,'first'))+1);
 
 
-    All = [before_pressed;after_start_video];
-    edges = 0:max(All(:))/20:max(All(:));
+        All = [before_pressed;after_start_video];
+        edges = 0:max(All(:))/20:max(All(:));
 
-    [N_before(s,:),edges_before(s,:), N_resume(s,:), edges_resume(s,:)] = plot_before_pressed_and_after_video_resume(subj_num(s), edges, before_pressed, after_start_video, ms_time);
-    Max(s,3) = edges_resume(s,(find(N_resume(s,:) == max(N_resume(s,:))))+1);
-
+        [N_before(s,:),edges_before(s,:), N_resume(s,:), edges_resume(s,:)] = plot_before_pressed_and_after_video_resume(subj_num(s), edges, before_pressed, after_start_video, ms_time);
+        Max(s,3) = edges_resume(s,(find(N_resume(s,:) == max(N_resume(s,:))))+1);
+    end
 
 end
 
@@ -166,11 +167,11 @@ p_befor_resume = ranksum(Max(:,1),Max(:,3));
 
 function [N_before,edges_before, N_after, edges_after] = plot_before_and_after_pressed(subj_num, edges, before_pressed, after_pressed, ms_time)
 figure
-histogram(before_pressed(:), 'BinEdges', edges, 'Normalization','countdensity');
+histogram(before_pressed(:), 'BinEdges', edges);
 [N_before,edges_before] = histcounts(before_pressed(:),edges);
 hold on;
 % histogram(mean_after_pressed)
-histogram(after_pressed(:), 'BinEdges', edges, 'Normalization','countdensity')
+histogram(after_pressed(:), 'BinEdges', edges)
 [N_after,edges_after] = histcounts(after_pressed(:),edges);
 
 title(append('Student No.',num2str(subj_num)))
@@ -190,11 +191,11 @@ end
 
 function [N_before,edges_before, N_resume, edges_resume] = plot_before_pressed_and_after_video_resume(subj_num, edges, before_pressed, after_start_video, ms_time)
 figure
-histogram(before_pressed(:), 'BinEdges', edges, 'Normalization','countdensity');
+histogram(before_pressed(:), 'BinEdges', edges);
 [N_before,edges_before] = histcounts(before_pressed(:),edges);
 hold on;
 % histogram(mean_after_pressed)
-histogram(after_start_video(:), 'BinEdges', edges, 'Normalization','countdensity')
+histogram(after_start_video(:), 'BinEdges', edges)
 [N_resume,edges_resume] = histcounts(after_start_video(:),edges);
 title(append('Student No.',num2str(subj_num)))
 subtitle(append('before pressed and after video resume, num of sample:', num2str(ms_time)))
