@@ -33,7 +33,7 @@ for s = 3:length(recordings_file)
     [eeg_data, raw_data, out_data] = load_file(path_subj);
 
     %% remove TP electrode
-%     raw_data = remove_TP(raw_data);
+    raw_data = remove_TP(raw_data);
 
     %% define parameters
     num_elec = 4;
