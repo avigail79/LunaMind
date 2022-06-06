@@ -2,14 +2,14 @@ clear; clc; close all;
 
 %% loading the data
 % Avigail's Path
-% path_data = 'C:\Users\Avigail Makbili\Documents\LunaMind\DATA Motzkin\DATA_LunaMind\20-2-22\';
+path_data = 'C:\Users\Avigail Makbili\Documents\LunaMind\LunaMind\20-2-22\';
 % Anat's path
 % path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\20-2-22\';
-path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\24-2-22\';
+% path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\24-2-22\';
 
 
-subj_num = [101:112 114:118];
-
+% subj_num = [101:112 114:118];
+recordings_file = dir('20-2-22');
 
 % prompt = 'Choose frequency range: 1-beta, 2-theta, 3-alpha, 4-delta: ';
 % i_freq = input(prompt);
@@ -23,8 +23,13 @@ i_freq = 1;
 % delta raw 0.5-4Hz
 % i_freq = 4;
 
-for s = 1:length(subj_num)
-    path_subj = append(path_data, num2str(subj_num(s)));
+for s = 1:length(recordings_file)-2 
+    if strcmp(recordings_file(s).name, '.') || strcmp(recordings_file(s).name, '..')
+        continue
+    elseif length(recordings_file(s).name) > 3 && recordings_file(s).name(1,5) == '_'
+        continue
+    end
+    path_subj = append(path_data, num2str(recordings_file(s).name));
     file_path = dir(path_subj);
 
     % this load should move to function
@@ -114,7 +119,7 @@ for s = 1:length(subj_num)
     before_pressed = zeros(ms_time+1, length(out_button)); % time before the pressed
     after_pressed = zeros(ms_time+1, length(out_button)); % time after the pressed
     after_start_video = zeros(ms_time+1, length(out_button));% time after video play
-    for b = 1:length(out_button)
+    for b = 1:size(out_button, 1)
         time_preseed_raw_idx = find(alpha_raw > out_button(b,2)); % find the closet bottom pressed idx in raw (1)
 
         time_play_out_idx = find(video_state_start(:,2) > out_button(b,2)); % find the idx time of the start video after button pressed in out
@@ -144,7 +149,7 @@ for s = 1:length(subj_num)
     edges = 0:max(All(:))/20:max(All(:));
 
     if before_pressed
-        [N_before(s,:), edges_before(s,:), N_after(s,:), edges_after(s,:)] = plot_before_and_after_pressed(subj_num(s), edges, before_pressed, after_pressed, ms_time);
+        [N_before(s,:), edges_before(s,:), N_after(s,:), edges_after(s,:)] = plot_before_and_after_pressed(recordings_file(s).name, edges, before_pressed, after_pressed, ms_time);
         Max(s,1) = edges_before(s,(find(N_before(s,:) == max(N_before(s,:)),1,'first'))+1);
 
         Max(s,2) = edges_after(s,(find(N_after(s,:) == max(N_after(s,:)),1,'first'))+1);
@@ -153,7 +158,7 @@ for s = 1:length(subj_num)
         All = [before_pressed;after_start_video];
         edges = 0:max(All(:))/20:max(All(:));
 
-        [N_before(s,:),edges_before(s,:), N_resume(s,:), edges_resume(s,:)] = plot_before_pressed_and_after_video_resume(subj_num(s), edges, before_pressed, after_start_video, ms_time);
+        [N_before(s,:),edges_before(s,:), N_resume(s,:), edges_resume(s,:)] = plot_before_pressed_and_after_video_resume(recordings_file(s).name, edges, before_pressed, after_start_video, ms_time);
         Max(s,3) = edges_resume(s,(find(N_resume(s,:) == max(N_resume(s,:))))+1);
     end
 
@@ -165,7 +170,7 @@ p_befor_after = ranksum(Max(:,1),Max(:,2));
 p_befor_resume = ranksum(Max(:,1),Max(:,3));
 
 
-function [N_before,edges_before, N_after, edges_after] = plot_before_and_after_pressed(subj_num, edges, before_pressed, after_pressed, ms_time)
+function [N_before,edges_before, N_after, edges_after] = plot_before_and_after_pressed(subj_file_name, edges, before_pressed, after_pressed, ms_time)
 figure
 histogram(before_pressed(:), 'BinEdges', edges);
 [N_before,edges_before] = histcounts(before_pressed(:),edges);
@@ -174,7 +179,7 @@ hold on;
 histogram(after_pressed(:), 'BinEdges', edges)
 [N_after,edges_after] = histcounts(after_pressed(:),edges);
 
-title(append('Student No.',num2str(subj_num)))
+title(append('Student No.',subj_file_name))
 subtitle(append('before and after pressed, num of sample:', num2str(ms_time)))
 xlabel('frequency [Hz]')
 ylabel('count')
@@ -189,7 +194,7 @@ end
 
 
 
-function [N_before,edges_before, N_resume, edges_resume] = plot_before_pressed_and_after_video_resume(subj_num, edges, before_pressed, after_start_video, ms_time)
+function [N_before,edges_before, N_resume, edges_resume] = plot_before_pressed_and_after_video_resume(subj_file_name, edges, before_pressed, after_start_video, ms_time)
 figure
 histogram(before_pressed(:), 'BinEdges', edges);
 [N_before,edges_before] = histcounts(before_pressed(:),edges);
@@ -197,7 +202,7 @@ hold on;
 % histogram(mean_after_pressed)
 histogram(after_start_video(:), 'BinEdges', edges)
 [N_resume,edges_resume] = histcounts(after_start_video(:),edges);
-title(append('Student No.',num2str(subj_num)))
+title(append('Student No.',subj_file_name))
 subtitle(append('before pressed and after video resume, num of sample:', num2str(ms_time)))
 xlabel('frequency [Hz]')
 ylabel('count')
