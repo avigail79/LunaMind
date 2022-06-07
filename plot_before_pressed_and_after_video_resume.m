@@ -8,7 +8,7 @@ histogram(after_start_video(:), 'BinEdges', edges)
 [N_resume,edges_resume] = histcounts(after_start_video(:),edges);
 title(append('Student No.',subj_file_name))
 subtitle(append('before pressed and after video resume, num of sample:', num2str(ms_time)))
-xlabel('frequency [Hz]')
+xlabel('Amp[dB/Hz]')
 ylabel('count')
 % histogram(mean_pressed)
 
