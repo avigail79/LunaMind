@@ -1,0 +1,13 @@
+Timestamp,ID,Event name,Data
+1645352851093,102,video_state,
+1645352853076,102,video_state,
+1645352853076,102,video_state,video_seek
+1645352854214,102,video_state,video_play
+1645352854456,102,lost_focus,2
+1645352855543,102,keyboard_pressed,d
+1645352856046,102,keyboard_pressed,f
+1645352856046,102,user_submit,1
+1645352856271,102,video_state,video_paused
+1645352856272,102,video_state,
+1645352856272,102,video_state,
+1645352859574,102,lost_focus,3
