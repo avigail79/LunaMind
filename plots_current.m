@@ -30,18 +30,16 @@ for s = 3:length(recordings_file)
     
     %% loading file
     path_subj = append(path_data, num2str(recordings_file(s).name));
-    [eeg_data, raw_data, out_data] = load_file(path_subj);
+    [eeg_data, raw_data, out_data] = load_files(path_subj);
 
     %% remove TP electrode
 %     raw_data = remove_TP(raw_data);
 
     %% define parameters
-    num_elec = 4;
-    num_freq = 4;
-    elec_names = ["TP9", "AF7", "AF8", "TP10"];
-    bands_names = ["beta", "theta", "alpha", "delta"];
-    x = (raw_data(:,1)-raw_data(1,1)); %time
-    fs = 256; %Sampling frequency
+%     num_freq = 4;
+%     elec_names = ["TP9", "AF7", "AF8", "TP10"];
+%     x = (raw_data(:,1)-raw_data(1,1)); %time
+    fs = 256; % Sampling frequency
 
     %% Arrange the data
 
@@ -52,21 +50,14 @@ for s = 3:length(recordings_file)
         raw_data(i,1) = (raw_data(i,1)-sub_elem) / fs;
     end
 
-    alpha_raw = raw_data(:,1); % time
-    for i_elec = 1:num_elec
-        alpha_raw(:,i_elec+1) = raw_data(:,1+i_freq+(4*(i_elec-1)));
-    end
-    for i = 1:length(alpha_raw) % column 6 is mean
-        alpha_raw(i,6) = sum(alpha_raw(i,2:5))/nnz(alpha_raw(i,2:5));
-    end
-
     % out data
     out_data = out_data(2:end, :);
     sub_elem = out_data{1,1};
     for i=1:size(out_data, 1)
         out_data{i,1} = (out_data{i,1} - sub_elem) /fs;
     end
-    % markers_type = unique(out_data(:,2));
+
+    alpha_raw = create_alpha_raw(raw_data, "alpha");
 
     %% button pressed and video state
     %     out_button = zeros(1,2);
@@ -99,11 +90,13 @@ for s = 3:length(recordings_file)
     video_state_start = video_state(video_state_start_indicies,:);
 
     % take time sec before and after the press
-    % ms_time = 200;
-    ms_time = 50;
+    ms_time = 200;
+%     ms_time = 50; 
+
     before_pressed = zeros(ms_time+1, length(out_button)); % time before the pressed
     after_pressed = zeros(ms_time+1, length(out_button)); % time after the pressed
     after_start_video = zeros(ms_time+1, length(out_button));% time after video play
+    
     for b = 1:size(out_button, 1)
         time_preseed_raw_idx = find(alpha_raw > out_button(b,2)); % find the closet bottom pressed idx in raw (1)
 
@@ -111,19 +104,22 @@ for s = 3:length(recordings_file)
         time_play_raw_idx = find(alpha_raw > video_state_start(time_play_out_idx(1), 2)); % find the idx time of the start video afeter button pressed in raw
 
         if time_preseed_raw_idx(1) > ms_time
-            before_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1)-ms_time:time_preseed_raw_idx(1),6);
+            before_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1)-ms_time:time_preseed_raw_idx(1),end);
         else
-            before_pressed(:,b) = alpha_raw(1:time_preseed_raw_idx(1),6);
+           before_pressed(:,b) = [zeros(ms_time+1-time_preseed_raw_idx(1),1); alpha_raw(1:time_preseed_raw_idx(1),end)];
         end
 
         if time_play_raw_idx(1)+ms_time < size(alpha_raw, 1)
-            after_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1):time_preseed_raw_idx(1)+ms_time,6);
+            after_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1):time_preseed_raw_idx(1)+ms_time,end);
         else
-            after_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1):end,6);
+            after_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1):end,end);
         end
 
-        after_start_video(:,b) = alpha_raw(time_play_raw_idx:time_play_raw_idx+ms_time, 6);
+        after_start_video(:,b) = alpha_raw(time_play_raw_idx:time_play_raw_idx+ms_time, end);
     end
+
+    before_pressed(isnan(before_pressed))=0;
+    after_pressed(isnan(after_pressed))=0;
 
     %% plot histogram
     mean_pressed = mean(before_pressed);
@@ -151,5 +147,5 @@ end
 
 
 % Analyse histogram bin count
-p_befor_after = ranksum(Max(:,1),Max(:,2));
-p_befor_resume = ranksum(Max(:,1),Max(:,3));
+% p_befor_after = ranksum(Max(:,1),Max(:,2));
+% p_befor_resume = ranksum(Max(:,1),Max(:,3));
