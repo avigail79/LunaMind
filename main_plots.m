@@ -15,13 +15,16 @@ recordings_file = dir('20-2-22');
 % i_freq = input(prompt);
 % i_freq = inputdlg(prompt);
 % beta 12.5-30Hz
-i_freq = 1;
 % theta 4-8Hz
 % i_freq = 2;
 % alpha raw 8-12Hz
 % i_freq = 3;
 % delta raw 0.5-4Hz
 % i_freq = 4;
+%     num_freq = 4;
+%     elec_names = ["TP9", "AF7", "AF8", "TP10"];
+%     x = (raw_data(:,1)-raw_data(1,1)); %time
+fs = 256; % Sampling frequency
 
 for s = 3:length(recordings_file) 
     if length(recordings_file(s).name) > 3 && recordings_file(s).name(1,5) == '_'
@@ -33,13 +36,7 @@ for s = 3:length(recordings_file)
     [eeg_data, raw_data, out_data] = load_files(path_subj);
 
     %% remove TP electrode
-%     raw_data = remove_TP(raw_data);
-
-    %% define parameters
-%     num_freq = 4;
-%     elec_names = ["TP9", "AF7", "AF8", "TP10"];
-%     x = (raw_data(:,1)-raw_data(1,1)); %time
-    fs = 256; % Sampling frequency
+    raw_data = remove_TP(raw_data);
 
     %% Arrange the data
 
