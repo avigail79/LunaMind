@@ -1,0 +1,361 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>main_plots</title><meta name="generator" content="MATLAB 9.12"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2022-06-12"><meta name="DC.source" content="main_plots.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">loading the data</a></li><li><a href="#4">loading file</a></li><li><a href="#5">remove TP electrode</a></li><li><a href="#6">Arrange the data</a></li><li><a href="#7">button pressed and video state</a></li><li><a href="#8">plot histogram</a></li></ul></div><pre class="codeinput">clear; clc; close <span class="string">all</span>;
+</pre><h2 id="2">loading the data</h2><p>Avigail's Path</p><pre class="codeinput">path_data = <span class="string">'C:\Users\Avigail Makbili\Documents\LunaMind\LunaMind\20-2-22\'</span>;
+<span class="comment">% Anat's path</span>
+<span class="comment">% path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\20-2-22\';</span>
+<span class="comment">% path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\24-2-22\';</span>
+
+
+<span class="comment">% subj_num = [101:112 114:118];</span>
+recordings_file = dir(<span class="string">'20-2-22'</span>);
+
+<span class="comment">% prompt = 'Choose frequency range: 1-beta, 2-theta, 3-alpha, 4-delta: ';</span>
+<span class="comment">% i_freq = input(prompt);</span>
+<span class="comment">% i_freq = inputdlg(prompt);</span>
+<span class="comment">% beta 12.5-30Hz</span>
+<span class="comment">% theta 4-8Hz</span>
+<span class="comment">% i_freq = 2;</span>
+<span class="comment">% alpha raw 8-12Hz</span>
+<span class="comment">% i_freq = 3;</span>
+<span class="comment">% delta raw 0.5-4Hz</span>
+<span class="comment">% i_freq = 4;</span>
+<span class="comment">%     num_freq = 4;</span>
+<span class="comment">%     elec_names = ["TP9", "AF7", "AF8", "TP10"];</span>
+<span class="comment">%     x = (raw_data(:,1)-raw_data(1,1)); %time</span>
+fs = 256; <span class="comment">% Sampling frequency</span>
+
+<span class="keyword">for</span> s = 3:length(recordings_file)
+</pre><pre class="codeinput">    <span class="keyword">if</span> length(recordings_file(s).name) &gt; 3 &amp;&amp; recordings_file(s).name(1,5) == <span class="string">'_'</span>
+        <span class="keyword">continue</span>
+    <span class="keyword">end</span>
+</pre><h2 id="4">loading file</h2><pre class="codeinput">    path_subj = append(path_data, num2str(recordings_file(s).name));
+    [eeg_data, raw_data, out_data] = load_files(path_subj);
+</pre><h2 id="5">remove TP electrode</h2><pre class="codeinput">    raw_data = remove_TP(raw_data);
+</pre><h2 id="6">Arrange the data</h2><pre class="codeinput">    <span class="comment">% raw data</span>
+    raw_data(:,1) = raw_data(:,1) * 1000; <span class="comment">% equal the time stamp of out</span>
+    sub_elem = raw_data(1,1); <span class="comment">% make outstam start with 0</span>
+    <span class="keyword">for</span> i=1:length(raw_data(:,1))
+        raw_data(i,1) = (raw_data(i,1)-sub_elem) / fs;
+    <span class="keyword">end</span>
+
+    <span class="comment">% out data</span>
+    out_data = out_data(2:end, :);
+    sub_elem = out_data{1,1};
+    <span class="keyword">for</span> i=1:size(out_data, 1)
+        out_data{i,1} = (out_data{i,1} - sub_elem) /fs;
+    <span class="keyword">end</span>
+
+    alpha_raw = create_alpha_raw(raw_data, <span class="string">"alpha"</span>);
+</pre><h2 id="7">button pressed and video state</h2><pre>   out_button = zeros(1,2);</pre><pre class="codeinput">    out_button = [];
+    video_state = zeros(1,3);
+    j = 0;
+    v = 0;
+    <span class="keyword">for</span> i=1:size(out_data,1)
+        <span class="keyword">if</span> strcmp(out_data{i,3},<span class="string">'button_pressed'</span>)
+            j = j+1;
+            out_button(j,1) = i; <span class="comment">%save the row index</span>
+            out_button(j,2) = out_data{i,1}; <span class="comment">% save the time</span>
+        <span class="keyword">end</span>
+        <span class="keyword">if</span> strcmp(out_data{i,3},<span class="string">'video_state'</span>)
+            v = v+1;
+            video_state(v,1) = i; <span class="comment">%save the row index</span>
+            video_state(v,2) = out_data{i,1}; <span class="comment">% save the time</span>
+            <span class="keyword">if</span> strcmp(out_data{i,4},<span class="string">'video_pause'</span>)
+                video_state(v,3) = 0;
+            <span class="keyword">elseif</span> strcmp(out_data{i,4},<span class="string">'video_play'</span>)
+                <span class="keyword">if</span> out_data{i,4} == <span class="string">'video_play'</span>
+                    video_state(v,3) = 1;
+                <span class="keyword">end</span>
+            <span class="keyword">end</span>
+
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+    video_state_start_indicies = find(video_state(:,3) == 1);
+    video_state_start = video_state(video_state_start_indicies,:);
+
+    <span class="comment">% take time sec before and after the press</span>
+    ms_time = 200;
+<span class="comment">%     ms_time = 50;</span>
+
+    <span class="comment">% all the data by the class</span>
+    before_pressed = zeros(ms_time+1, length(out_button)); <span class="comment">% time before the pressed</span>
+    after_pressed = zeros(ms_time+1, length(out_button)); <span class="comment">% time after the pressed</span>
+    after_start_video = zeros(ms_time+1, length(out_button));<span class="comment">% time after video play</span>
+
+    <span class="keyword">for</span> b = 1:size(out_button, 1)
+        time_preseed_raw_idx = find(alpha_raw &gt; out_button(b,2)); <span class="comment">% find the closet bottom pressed idx in raw (1)</span>
+
+        time_play_out_idx = find(video_state_start(:,2) &gt; out_button(b,2)); <span class="comment">% find the idx time of the start video after button pressed in out</span>
+        time_play_raw_idx = find(alpha_raw &gt; video_state_start(time_play_out_idx(1), 2)); <span class="comment">% find the idx time of the start video afeter button pressed in raw</span>
+
+        <span class="keyword">if</span> time_preseed_raw_idx(1) &gt; ms_time
+            before_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1)-ms_time:time_preseed_raw_idx(1),end);
+        <span class="keyword">else</span>
+           before_pressed(:,b) = [zeros(ms_time+1-time_preseed_raw_idx(1),1); alpha_raw(1:time_preseed_raw_idx(1),end)];
+        <span class="keyword">end</span>
+
+        <span class="keyword">if</span> time_play_raw_idx(1)+ms_time &lt; size(alpha_raw, 1)
+            after_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1):time_preseed_raw_idx(1)+ms_time,end);
+        <span class="keyword">else</span>
+            after_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1):end,end);
+        <span class="keyword">end</span>
+
+        after_start_video(:,b) = alpha_raw(time_play_raw_idx:time_play_raw_idx+ms_time, end);
+    <span class="keyword">end</span>
+
+    before_pressed(isnan(before_pressed))=0;
+    after_pressed(isnan(after_pressed))=0;
+</pre><h2 id="8">plot histogram</h2><pre class="codeinput">    mean_pressed = mean(before_pressed);
+    mean_after_pressed = mean(after_pressed);
+
+    <span class="comment">% edges = 0:0.1:5;</span>
+    All = [before_pressed;after_pressed];
+    edges = 0:max(All(:))/20:max(All(:));
+
+    <span class="keyword">if</span> out_button
+        [N_before(s,:), edges_before(s,:), N_after(s,:), edges_after(s,:)] = plot_before_and_after_pressed(recordings_file(s).name, edges, before_pressed, after_pressed, ms_time);
+        Max(s,1) = edges_before(s,(find(N_before(s,:) == max(N_before(s,:)),1,<span class="string">'first'</span>))+1);
+
+        Max(s,2) = edges_after(s,(find(N_after(s,:) == max(N_after(s,:)),1,<span class="string">'first'</span>))+1);
+
+
+        All = [before_pressed;after_start_video];
+        edges = 0:max(All(:))/20:max(All(:));
+
+        [N_before(s,:),edges_before(s,:), N_resume(s,:), edges_resume(s,:)] = plot_before_pressed_and_after_video_resume(recordings_file(s).name, edges, before_pressed, after_start_video, ms_time);
+        Max(s,3) = edges_resume(s,(find(N_resume(s,:) == max(N_resume(s,:))))+1);
+    <span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="main_plots_01.png" alt=""> <img vspace="5" hspace="5" src="main_plots_02.png" alt=""> <img vspace="5" hspace="5" src="main_plots_03.png" alt=""> <img vspace="5" hspace="5" src="main_plots_04.png" alt=""> <img vspace="5" hspace="5" src="main_plots_05.png" alt=""> <img vspace="5" hspace="5" src="main_plots_06.png" alt=""> <img vspace="5" hspace="5" src="main_plots_07.png" alt=""> <img vspace="5" hspace="5" src="main_plots_08.png" alt=""> <img vspace="5" hspace="5" src="main_plots_09.png" alt=""> <img vspace="5" hspace="5" src="main_plots_10.png" alt=""> <img vspace="5" hspace="5" src="main_plots_11.png" alt=""> <img vspace="5" hspace="5" src="main_plots_12.png" alt=""> <img vspace="5" hspace="5" src="main_plots_13.png" alt=""> <img vspace="5" hspace="5" src="main_plots_14.png" alt=""> <img vspace="5" hspace="5" src="main_plots_15.png" alt=""> <img vspace="5" hspace="5" src="main_plots_16.png" alt=""> <img vspace="5" hspace="5" src="main_plots_17.png" alt=""> <img vspace="5" hspace="5" src="main_plots_18.png" alt=""> <img vspace="5" hspace="5" src="main_plots_19.png" alt=""> <img vspace="5" hspace="5" src="main_plots_20.png" alt=""> <img vspace="5" hspace="5" src="main_plots_21.png" alt=""> <img vspace="5" hspace="5" src="main_plots_22.png" alt=""> <pre class="codeoutput error">Unable to perform assignment because the size of the left side is 1-by-1 and
+the size of the right side is 1-by-20.
+
+Error in main_plots (line 141)
+        Max(s,3) = edges_resume(s,(find(N_resume(s,:) == max(N_resume(s,:))))+1);
+</pre><pre class="codeinput"><span class="keyword">end</span>
+
+
+<span class="comment">% Analyse histogram bin count</span>
+<span class="comment">% p_befor_after = ranksum(Max(:,1),Max(:,2));</span>
+<span class="comment">% p_befor_resume = ranksum(Max(:,1),Max(:,3));</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear; clc; close all;
+
+%% loading the data
+% Avigail's Path
+path_data = 'C:\Users\Avigail Makbili\Documents\LunaMind\LunaMind\20-2-22\';
+% Anat's path
+% path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\20-2-22\';
+% path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\24-2-22\';
+
+
+% subj_num = [101:112 114:118];
+recordings_file = dir('20-2-22');
+
+% prompt = 'Choose frequency range: 1-beta, 2-theta, 3-alpha, 4-delta: ';
+% i_freq = input(prompt);
+% i_freq = inputdlg(prompt);
+% beta 12.5-30Hz
+% theta 4-8Hz
+% i_freq = 2;
+% alpha raw 8-12Hz
+% i_freq = 3;
+% delta raw 0.5-4Hz
+% i_freq = 4;
+%     num_freq = 4;
+%     elec_names = ["TP9", "AF7", "AF8", "TP10"];
+%     x = (raw_data(:,1)-raw_data(1,1)); %time
+fs = 256; % Sampling frequency
+
+for s = 3:length(recordings_file) 
+    if length(recordings_file(s).name) > 3 && recordings_file(s).name(1,5) == '_'
+        continue
+    end
+    
+    %% loading file
+    path_subj = append(path_data, num2str(recordings_file(s).name));
+    [eeg_data, raw_data, out_data] = load_files(path_subj);
+
+    %% remove TP electrode
+    raw_data = remove_TP(raw_data);
+
+    %% Arrange the data
+
+    % raw data
+    raw_data(:,1) = raw_data(:,1) * 1000; % equal the time stamp of out
+    sub_elem = raw_data(1,1); % make outstam start with 0
+    for i=1:length(raw_data(:,1))
+        raw_data(i,1) = (raw_data(i,1)-sub_elem) / fs;
+    end
+
+    % out data
+    out_data = out_data(2:end, :);
+    sub_elem = out_data{1,1};
+    for i=1:size(out_data, 1)
+        out_data{i,1} = (out_data{i,1} - sub_elem) /fs;
+    end
+
+    alpha_raw = create_alpha_raw(raw_data, "alpha");
+
+    %% button pressed and video state
+    %     out_button = zeros(1,2);
+    out_button = [];
+    video_state = zeros(1,3);
+    j = 0;
+    v = 0;
+    for i=1:size(out_data,1)
+        if strcmp(out_data{i,3},'button_pressed')
+            j = j+1;
+            out_button(j,1) = i; %save the row index
+            out_button(j,2) = out_data{i,1}; % save the time
+        end
+        if strcmp(out_data{i,3},'video_state')
+            v = v+1;
+            video_state(v,1) = i; %save the row index
+            video_state(v,2) = out_data{i,1}; % save the time
+            if strcmp(out_data{i,4},'video_pause')
+                video_state(v,3) = 0;
+            elseif strcmp(out_data{i,4},'video_play')
+                if out_data{i,4} == 'video_play'
+                    video_state(v,3) = 1;
+                end
+            end
+
+        end
+    end
+
+    video_state_start_indicies = find(video_state(:,3) == 1);
+    video_state_start = video_state(video_state_start_indicies,:);
+
+    % take time sec before and after the press
+    ms_time = 200;
+%     ms_time = 50; 
+    
+    % all the data by the class
+    before_pressed = zeros(ms_time+1, length(out_button)); % time before the pressed
+    after_pressed = zeros(ms_time+1, length(out_button)); % time after the pressed
+    after_start_video = zeros(ms_time+1, length(out_button));% time after video play
+    
+    for b = 1:size(out_button, 1)
+        time_preseed_raw_idx = find(alpha_raw > out_button(b,2)); % find the closet bottom pressed idx in raw (1)
+
+        time_play_out_idx = find(video_state_start(:,2) > out_button(b,2)); % find the idx time of the start video after button pressed in out
+        time_play_raw_idx = find(alpha_raw > video_state_start(time_play_out_idx(1), 2)); % find the idx time of the start video afeter button pressed in raw
+
+        if time_preseed_raw_idx(1) > ms_time
+            before_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1)-ms_time:time_preseed_raw_idx(1),end);
+        else
+           before_pressed(:,b) = [zeros(ms_time+1-time_preseed_raw_idx(1),1); alpha_raw(1:time_preseed_raw_idx(1),end)];
+        end
+
+        if time_play_raw_idx(1)+ms_time < size(alpha_raw, 1)
+            after_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1):time_preseed_raw_idx(1)+ms_time,end);
+        else
+            after_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1):end,end);
+        end
+
+        after_start_video(:,b) = alpha_raw(time_play_raw_idx:time_play_raw_idx+ms_time, end);
+    end
+
+    before_pressed(isnan(before_pressed))=0;
+    after_pressed(isnan(after_pressed))=0;
+
+    %% plot histogram
+    mean_pressed = mean(before_pressed);
+    mean_after_pressed = mean(after_pressed);
+
+    % edges = 0:0.1:5;
+    All = [before_pressed;after_pressed];
+    edges = 0:max(All(:))/20:max(All(:));
+
+    if out_button
+        [N_before(s,:), edges_before(s,:), N_after(s,:), edges_after(s,:)] = plot_before_and_after_pressed(recordings_file(s).name, edges, before_pressed, after_pressed, ms_time);
+        Max(s,1) = edges_before(s,(find(N_before(s,:) == max(N_before(s,:)),1,'first'))+1);
+
+        Max(s,2) = edges_after(s,(find(N_after(s,:) == max(N_after(s,:)),1,'first'))+1);
+
+
+        All = [before_pressed;after_start_video];
+        edges = 0:max(All(:))/20:max(All(:));
+
+        [N_before(s,:),edges_before(s,:), N_resume(s,:), edges_resume(s,:)] = plot_before_pressed_and_after_video_resume(recordings_file(s).name, edges, before_pressed, after_start_video, ms_time);
+        Max(s,3) = edges_resume(s,(find(N_resume(s,:) == max(N_resume(s,:))))+1);
+    end
+
+end
+
+
+% Analyse histogram bin count
+% p_befor_after = ranksum(Max(:,1),Max(:,2));
+% p_befor_resume = ranksum(Max(:,1),Max(:,3));
+
+##### SOURCE END #####
+--></body></html>
