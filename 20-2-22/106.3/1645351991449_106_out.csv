@@ -1,0 +1,5 @@
+Timestamp,ID,Event name,Data
+1645351991452,106,video_state,video_seek
+1645351993316,106,video_state,
+1645351993316,106,video_state,
+1645351994166,106,gained_focus,0

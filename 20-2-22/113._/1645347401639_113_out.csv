@@ -1,0 +1,15 @@
+Timestamp,ID,Event name,Data
+1645347401640,113,video_state,
+1645347416631,113,video_state,video_seek
+1645347416631,113,video_state,
+1645347419446,113,video_state,video_play
+1645347434991,113,button_pressed,2
+1645347435013,113,video_state,video_paused
+1645347442485,113,go_back,15.592273
+1645347442502,113,video_state,video_seek
+1645347442543,113,video_state,video_play
+1645347449528,113,button_pressed,2
+1645347449541,113,video_state,video_paused
+1645347454400,113,go_back,12.535276
+1645347454412,113,video_state,video_seek
+1645347454783,113,video_state,video_play

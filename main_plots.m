@@ -25,7 +25,10 @@ recordings_file = dir('20-2-22');
 %     elec_names = ["TP9", "AF7", "AF8", "TP10"];
 %     x = (raw_data(:,1)-raw_data(1,1)); %time
 fs = 256; % Sampling frequency
+<<<<<<< HEAD
 pressed_focus_level = zeros(length(recordings_file), 4);
+=======
+>>>>>>> 888750bb4c0292a28ba79c38c35ec65275e3470e
 
 for s = 3:length(recordings_file) 
     if length(recordings_file(s).name) > 3 && recordings_file(s).name(1,5) == '_'
@@ -68,7 +71,10 @@ for s = 3:length(recordings_file)
             j = j+1;
             out_button(j,1) = i; %save the row index
             out_button(j,2) = out_data{i,1}; % save the time
+<<<<<<< HEAD
             out_button(j,3) = out_data{i,4}; % save the focus level
+=======
+>>>>>>> 888750bb4c0292a28ba79c38c35ec65275e3470e
         end
         if strcmp(out_data{i,3},'video_state')
             v = v+1;
@@ -91,8 +97,12 @@ for s = 3:length(recordings_file)
     % take time sec before and after the press
     ms_time = 200;
 %     ms_time = 50; 
+<<<<<<< HEAD
     
     % all the data by the class
+=======
+
+>>>>>>> 888750bb4c0292a28ba79c38c35ec65275e3470e
     before_pressed = zeros(ms_time+1, length(out_button)); % time before the pressed
     after_pressed = zeros(ms_time+1, length(out_button)); % time after the pressed
     after_start_video = zeros(ms_time+1, length(out_button));% time after video play
@@ -120,6 +130,7 @@ for s = 3:length(recordings_file)
 
     before_pressed(isnan(before_pressed))=0;
     after_pressed(isnan(after_pressed))=0;
+<<<<<<< HEAD
     %% pressed per focus level
     % 4 focus levles
     if out_button
@@ -178,5 +189,34 @@ xlabel('focus level')
 ylabel('sum of pressed')
 
 %% Analyse histogram bin count
+=======
+
+    %% plot histogram
+    mean_pressed = mean(before_pressed);
+    mean_after_pressed = mean(after_pressed);
+
+    % edges = 0:0.1:5;
+    All = [before_pressed;after_pressed];
+    edges = 0:max(All(:))/20:max(All(:));
+
+    if before_pressed
+        [N_before(s,:), edges_before(s,:), N_after(s,:), edges_after(s,:)] = plot_before_and_after_pressed(recordings_file(s).name, edges, before_pressed, after_pressed, ms_time);
+        Max(s,1) = edges_before(s,(find(N_before(s,:) == max(N_before(s,:)),1,'first'))+1);
+
+        Max(s,2) = edges_after(s,(find(N_after(s,:) == max(N_after(s,:)),1,'first'))+1);
+
+
+        All = [before_pressed;after_start_video];
+        edges = 0:max(All(:))/20:max(All(:));
+
+        [N_before(s,:),edges_before(s,:), N_resume(s,:), edges_resume(s,:)] = plot_before_pressed_and_after_video_resume(recordings_file(s).name, edges, before_pressed, after_start_video, ms_time);
+        Max(s,3) = edges_resume(s,(find(N_resume(s,:) == max(N_resume(s,:))))+1);
+    end
+
+end
+
+
+% Analyse histogram bin count
+>>>>>>> 888750bb4c0292a28ba79c38c35ec65275e3470e
 % p_befor_after = ranksum(Max(:,1),Max(:,2));
 % p_befor_resume = ranksum(Max(:,1),Max(:,3));
