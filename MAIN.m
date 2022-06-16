@@ -4,6 +4,7 @@ clear; clc; close all;
 % Avigail's Path
 path_data = 'C:\Users\Avigail Makbili\Documents\LunaMind\LunaMind\20-2-22\';
 % Anat's path
+% path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\LunaMind_Git\20-2-22\';
 % path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\20-2-22\';
 % path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\24-2-22\';
 
@@ -11,20 +12,8 @@ path_data = 'C:\Users\Avigail Makbili\Documents\LunaMind\LunaMind\20-2-22\';
 % subj_num = [101:112 114:118];
 recordings_file = dir('20-2-22');
 
-% prompt = 'Choose frequency range: 1-beta, 2-theta, 3-alpha, 4-delta: ';
-% i_freq = input(prompt);
-% i_freq = inputdlg(prompt);
-% beta 12.5-30Hz
-% theta 4-8Hz
-% i_freq = 2;
-% alpha raw 8-12Hz
-% i_freq = 3;
-% delta raw 0.5-4Hz
-% i_freq = 4;
-%     num_freq = 4;
-%     elec_names = ["TP9", "AF7", "AF8", "TP10"];
-%     x = (raw_data(:,1)-raw_data(1,1)); %time
 fs = 256; % Sampling frequency
+pressed_focus_level = zeros(length(recordings_file), 4);
 
 for s = 3:length(recordings_file) 
     if length(recordings_file(s).name) > 3 && recordings_file(s).name(1,5) == '_'
@@ -32,7 +21,7 @@ for s = 3:length(recordings_file)
     end
     
     %% loading file
-    path_subj = append(path_data, num2str(recordings_file(s).name));
+    path_subj = [path_data num2str(recordings_file(s).name)];
     [eeg_data, raw_data, out_data] = load_files(path_subj);
 
     %% remove TP electrode
@@ -54,7 +43,9 @@ for s = 3:length(recordings_file)
         out_data{i,1} = (out_data{i,1} - sub_elem) /fs;
     end
 
-    alpha_raw = create_alpha_raw(raw_data, "alpha");
+    alpha_raw = create_alpha_raw(raw_data, "alpha"); %The last column is the mean
+    
+    
 
     %% button pressed and video state
     %     out_button = zeros(1,2);
@@ -67,6 +58,7 @@ for s = 3:length(recordings_file)
             j = j+1;
             out_button(j,1) = i; %save the row index
             out_button(j,2) = out_data{i,1}; % save the time
+            out_button(j,3) = out_data{i,4}; % save the focus level
         end
         if strcmp(out_data{i,3},'video_state')
             v = v+1;
@@ -89,14 +81,15 @@ for s = 3:length(recordings_file)
     % take time sec before and after the press
     ms_time = 200;
 %     ms_time = 50; 
-    
-    % all the data by the class
+
     before_pressed = zeros(ms_time+1, length(out_button)); % time before the pressed
     after_pressed = zeros(ms_time+1, length(out_button)); % time after the pressed
     after_start_video = zeros(ms_time+1, length(out_button));% time after video play
     
     for b = 1:size(out_button, 1)
         time_preseed_raw_idx = find(alpha_raw > out_button(b,2)); % find the closet bottom pressed idx in raw (1)
+        time_preseed_raw_idx_vec(b) = find(alpha_raw > out_button(b,2),1,'first'); % find the closet bottom pressed idx in raw (1)
+
 
         time_play_out_idx = find(video_state_start(:,2) > out_button(b,2)); % find the idx time of the start video after button pressed in out
         time_play_raw_idx = find(alpha_raw > video_state_start(time_play_out_idx(1), 2)); % find the idx time of the start video afeter button pressed in raw
@@ -118,7 +111,17 @@ for s = 3:length(recordings_file)
 
     before_pressed(isnan(before_pressed))=0;
     after_pressed(isnan(after_pressed))=0;
+    
+    %% focus level 
+    for i = 1:4
+        pressed_focus_level(s, i) = sum(out_button(:,3) == i);
+    end
 
+    %% std analysis
+    pressed_time = out_button(:, 2);
+    resume_time = video_state_start(:,2);
+
+    std_analysis(alpha_raw, pressed_time, 0, resume_time, 1) % 1 -turn on. 0- turn off
     %% plot histogram
     mean_pressed = mean(before_pressed);
     mean_after_pressed = mean(after_pressed);
@@ -141,6 +144,16 @@ for s = 3:length(recordings_file)
         Max(s,3) = edges_resume(s,(find(N_resume(s,:) == max(N_resume(s,:))))+1);
     end
 
+
+    %% calculate mean level
+    pressed_focus_level_mean = zeros(1,4);
+    for i=1:4
+        pressed_focus_level_mean(1,i) = sum(pressed_focus_level(:,i));
+    end
+    bar(pressed_focus_level_mean)
+    title('button presed by focus level')
+    xlabel('focus level')
+    ylabel('sum of pressed')
 end
 
 
