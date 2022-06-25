@@ -15,11 +15,11 @@ recordings_file = dir('20-2-22');
 fs = 256; % Sampling frequency
 pressed_focus_level = zeros(length(recordings_file), 4);
 
-for s = 3:length(recordings_file) 
+for s = 3:length(recordings_file)
     if length(recordings_file(s).name) > 3 && recordings_file(s).name(1,5) == '_'
         continue
     end
-    
+
     %% loading file
     path_subj = [path_data num2str(recordings_file(s).name)];
     [eeg_data, raw_data, out_data] = load_files(path_subj);
@@ -44,8 +44,8 @@ for s = 3:length(recordings_file)
     end
 
     alpha_raw = create_alpha_raw(raw_data, "alpha"); %The last column is the mean
-    
-    
+
+
 
     %% button pressed and video state
     %     out_button = zeros(1,2);
@@ -80,14 +80,14 @@ for s = 3:length(recordings_file)
 
     % take time sec before and after the press
     ms_time = 200;
-%     ms_time = 50; 
+    %     ms_time = 50;
 
     before_pressed = zeros(ms_time+1, length(out_button)); % time before the pressed
     after_pressed = zeros(ms_time+1, length(out_button)); % time after the pressed
     after_start_video = zeros(ms_time+1, length(out_button));% time after video play
-    
+
     for b = 1:size(out_button, 1)
-        time_preseed_raw_idx = find(alpha_raw > out_button(b,2)); % find the closet bottom pressed idx in raw (1)
+        time_preseed_raw_idx = find(alpha_raw > out_button(b,2)); % find the closet bottom presed idx in raw (1)
         time_preseed_raw_idx_vec(b) = find(alpha_raw > out_button(b,2),1,'first'); % find the closet bottom pressed idx in raw (1)
 
 
@@ -97,7 +97,7 @@ for s = 3:length(recordings_file)
         if time_preseed_raw_idx(1) > ms_time
             before_pressed(:,b) = alpha_raw(time_preseed_raw_idx(1)-ms_time:time_preseed_raw_idx(1),end);
         else
-           before_pressed(:,b) = [zeros(ms_time+1-time_preseed_raw_idx(1),1); alpha_raw(1:time_preseed_raw_idx(1),end)];
+            before_pressed(:,b) = [zeros(ms_time+1-time_preseed_raw_idx(1),1); alpha_raw(1:time_preseed_raw_idx(1),end)];
         end
 
         if time_play_raw_idx(1)+ms_time < size(alpha_raw, 1)
@@ -111,52 +111,56 @@ for s = 3:length(recordings_file)
 
     before_pressed(isnan(before_pressed))=0;
     after_pressed(isnan(after_pressed))=0;
-    
-    %% focus level 
-    for i = 1:4
-        pressed_focus_level(s, i) = sum(out_button(:,3) == i);
+
+    %% focus level
+    if out_button
+        for i = 1:4
+            pressed_focus_level(s, i) = sum(out_button(:,3) == i);
+        end
     end
 
     %% std analysis
-    pressed_time = out_button(:, 2);
-    resume_time = video_state_start(:,2);
+    if out_button
+        pressed_time = out_button(:, 2);
+        resume_time = video_state_start(:,2);
 
-    std_analysis(alpha_raw, pressed_time, 0, resume_time, 1) % 1 -turn on. 0- turn off
+        std_analysis_plots(recordings_file(s).name, alpha_raw, pressed_time, resume_time)
+    end
     %% plot histogram
-    mean_pressed = mean(before_pressed);
-    mean_after_pressed = mean(after_pressed);
+    %     mean_pressed = mean(before_pressed);
+    %     mean_after_pressed = mean(after_pressed);
+    %
+    %     edges = 0:0.1:5;
+    %     All = [before_pressed;after_pressed];
+    %     edges = 0:max(All(:))/20:max(All(:));
+    %
+    %     if before_pressed
+    %         [N_before(s,:), edges_before(s,:), N_after(s,:), edges_after(s,:)] = plot_before_and_after_pressed(recordings_file(s).name, edges, before_pressed, after_pressed, ms_time);
+    %         Max(s,1) = edges_before(s,(find(N_before(s,:) == max(N_before(s,:)),1,'first'))+1);
+    %
+    %         Max(s,2) = edges_after(s,(find(N_after(s,:) == max(N_after(s,:)),1,'first'))+1);
+    %
+    %
+    %         All = [before_pressed;after_start_video];
+    %         edges = 0:max(All(:))/20:max(All(:));
+    %
+    %         [N_before(s,:),edges_before(s,:), N_resume(s,:), edges_resume(s,:)] = plot_before_pressed_and_after_video_resume(recordings_file(s).name, edges, before_pressed, after_start_video, ms_time);
+    %         Max(s,3) = edges_resume(s,(find(N_resume(s,:) == max(N_resume(s,:))))+1);
+    %     end
 
-    % edges = 0:0.1:5;
-    All = [before_pressed;after_pressed];
-    edges = 0:max(All(:))/20:max(All(:));
 
-    if before_pressed
-        [N_before(s,:), edges_before(s,:), N_after(s,:), edges_after(s,:)] = plot_before_and_after_pressed(recordings_file(s).name, edges, before_pressed, after_pressed, ms_time);
-        Max(s,1) = edges_before(s,(find(N_before(s,:) == max(N_before(s,:)),1,'first'))+1);
-
-        Max(s,2) = edges_after(s,(find(N_after(s,:) == max(N_after(s,:)),1,'first'))+1);
-
-
-        All = [before_pressed;after_start_video];
-        edges = 0:max(All(:))/20:max(All(:));
-
-        [N_before(s,:),edges_before(s,:), N_resume(s,:), edges_resume(s,:)] = plot_before_pressed_and_after_video_resume(recordings_file(s).name, edges, before_pressed, after_start_video, ms_time);
-        Max(s,3) = edges_resume(s,(find(N_resume(s,:) == max(N_resume(s,:))))+1);
-    end
-
-
-    %% calculate mean level
-    pressed_focus_level_mean = zeros(1,4);
-    for i=1:4
-        pressed_focus_level_mean(1,i) = sum(pressed_focus_level(:,i));
-    end
-    bar(pressed_focus_level_mean)
-    title('button presed by focus level')
-    xlabel('focus level')
-    ylabel('sum of pressed')
 end
 
-
+%% calculate mean level
+pressed_focus_level_mean = zeros(1,4);
+for i=1:4
+    pressed_focus_level_mean(1,i) = sum(pressed_focus_level(:,i));
+end
+figure
+bar(pressed_focus_level_mean)
+title('button presed by focus level')
+xlabel('focus level')
+ylabel('sum of pressed')
 % Analyse histogram bin count
 % p_befor_after = ranksum(Max(:,1),Max(:,2));
 % p_befor_resume = ranksum(Max(:,1),Max(:,3));
