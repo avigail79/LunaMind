@@ -1,32 +1,19 @@
-function std_analysis_plots(subj_file_name, alpha_raw, pressed_time, resume_time)
+function std_analysis_plots(subj_file_name, alpha_raw, pressed_time, resume_time, pressed_num)
 
 std_win = 10;
 moving_std = movstd(alpha_raw(:,end), std_win);
 
 figure
+plot(alpha_raw(:,1), moving_std)
+xline(pressed_time, 'color', 'r')
+xline(resume_time, 'color', 'g')
+legend('STD','Button pressed', 'resume video')
 title(append('Student No.',subj_file_name))
-subplot(2,1,1)
-plot(alpha_raw(:,1), moving_std)
-subtitle('Standard deviation over 1 sec window')
+subtitle(append('Standard deviation over 1 sec window. NumOfPressed:', num2str(pressed_num)))
 xlabel('Time [sec]')
 ylabel('STD')
 ylim([0 0.02])
-hold on
-if pressed_time
-    xline(pressed_time, 'color', 'r')
-    legend('STD','Button pressed')
-end
 
-subplot(2,1,2)
-plot(alpha_raw(:,1), moving_std)
-xlabel('Time [sec]')
-ylabel('STD')
-ylim([0 0.02])
-hold on
-if resume_time
-    xline(resume_time, 'color', 'g')
-    legend('STD', 'resume video')
-end
 
 hold off
 end

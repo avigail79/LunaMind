@@ -87,9 +87,14 @@ for s = 3:length(recordings_file)
     after_start_video = zeros(ms_time+1, length(out_button));% time after video play
 
     for b = 1:size(out_button, 1)
+        
+        % remove button with focus level 1 or 2
+        if out_button(b, 3) == 3 || out_button(b, 3) == 4
+            continue
+        end
+
         time_preseed_raw_idx = find(alpha_raw > out_button(b,2)); % find the closet bottom presed idx in raw (1)
         time_preseed_raw_idx_vec(b) = find(alpha_raw > out_button(b,2),1,'first'); % find the closet bottom pressed idx in raw (1)
-
 
         time_play_out_idx = find(video_state_start(:,2) > out_button(b,2)); % find the idx time of the start video after button pressed in out
         time_play_raw_idx = find(alpha_raw > video_state_start(time_play_out_idx(1), 2)); % find the idx time of the start video afeter button pressed in raw
@@ -118,13 +123,14 @@ for s = 3:length(recordings_file)
             pressed_focus_level(s, i) = sum(out_button(:,3) == i);
         end
     end
-
+    pressed_focus_level(s, 5) = sum(pressed_focus_level(s, 1:2));
+    pressed_focus_level(s, 6) = sum(pressed_focus_level(s, 3:4));
     %% std analysis
     if out_button
         pressed_time = out_button(:, 2);
         resume_time = video_state_start(:,2);
 
-        std_analysis_plots(recordings_file(s).name, alpha_raw, pressed_time, resume_time)
+        std_analysis_plots(recordings_file(s).name, alpha_raw, pressed_time, resume_time, pressed_focus_level(s,6))
     end
     %% plot histogram
     %     mean_pressed = mean(before_pressed);
@@ -156,6 +162,8 @@ pressed_focus_level_mean = zeros(1,4);
 for i=1:4
     pressed_focus_level_mean(1,i) = sum(pressed_focus_level(:,i));
 end
+% pressed_focus_level = array2table(pressed_focus_level,'VariableNames',{'level 1','level 2','level 3', 'level 4', '1 & 2', '3 & 4'});
+
 figure
 bar(pressed_focus_level_mean)
 title('button presed by focus level')
