@@ -1,0 +1,62 @@
+clear; clc; close all;
+
+%% loading the data
+% Avigail's Path
+path_data = 'C:\Users\Avigail Makbili\Documents\LunaMind\LunaMind\20-2-22\';
+% Anat's path
+% path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\LunaMind_Git\20-2-22\';
+% path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\20-2-22\';
+% path_data = 'G:\My Drive\Oren Shriki\LunaMind\Analyses\DATA\DATA_LunaMind\24-2-22\';
+
+
+% subj_num = [101:112 114:118];
+recordings_file = dir('20-2-22');
+
+fs = 256; % Sampling frequency
+pressed_focus_level = zeros(length(recordings_file), 4);
+
+for s = 3:3%length(recordings_file)
+    if length(recordings_file(s).name) > 3 && recordings_file(s).name(1,5) == '_'
+        continue
+    end
+
+    %% loading file
+    path_subj = [path_data num2str(recordings_file(s).name)];
+    [eeg_data, raw_data, out_data] = load_files(path_subj);
+
+    %% remove TP electrode
+    raw_data = remove_TP(raw_data);
+
+    %% Data arrangement 
+     % raw data
+%     raw_data_second = raw_data_arrangment(raw_data);
+
+    % timstamp out data
+%     out_timestamp = cell2mat(out_data(2:end,1));
+%     for i=1:length(out_timestamp(:,1))
+%         curr_num = num2str(out_timestamp(i,1));
+%         out_timestamp(i,1) = str2num(curr_num(1:10));
+%     end
+% 
+%     sub_elem = out_timestamp(1,1); % make timestamp start with 0
+%     for i=1:length(out_timestamp(:,1))
+%         out_timestamp(i,1) = (out_timestamp(i,1)-sub_elem);
+%     end
+
+%     out_timestamp = cell2mat(out_data(2:end,1));
+    for i=1:size(out_data(:,1))
+        curr_num = num2str(out_data(i,1));
+        out_data{i,1} = str2num(curr_num(1:10));
+    end
+
+    sub_elem = out_data{1,1}; % make timestamp start with 0
+    for i=1:length(out_data(:,1))
+        out_data{i,1} = (out_data{i,1} - sub_elem);
+    end
+
+%     out_data = out_data(2:end, :);
+%     sub_elem = out_data{1,1};
+%     for i=1:size(out_data, 1)
+%         out_data{i,1} = (out_data{i,1} - sub_elem);
+%     end
+end
