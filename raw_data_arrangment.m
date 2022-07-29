@@ -2,6 +2,7 @@ function raw_data_second = raw_data_arrangment(raw_data)
 
 min_samples_per_sec = 7;
 
+% time col
 for i=1:length(raw_data(:,1))
     curr_num = num2str(raw_data(i,1));
     raw_data(i,1) = str2num(curr_num(1:10));
@@ -12,7 +13,7 @@ for i=1:length(raw_data(:,1))
     raw_data(i,1) = (raw_data(i,1)-sub_elem);
 end
 
-raw_data_second = zeros(raw_data(end,1), 9);
+raw_data_second = zeros(1, 9);
 row_end = 1;
 sec_sub_row = 0;
 for sec = 1:raw_data(end,1)
@@ -44,7 +45,6 @@ for sec = 1:raw_data(end,1)
 
     % give number to row
     raw_data_second(sec-sec_sub_row,1) = sec-1;
-
 
 end
 

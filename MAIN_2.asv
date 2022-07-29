@@ -28,35 +28,20 @@ for s = 3:3%length(recordings_file)
     raw_data = remove_TP(raw_data);
 
     %% Data arrangement 
-     % raw data
-%     raw_data_second = raw_data_arrangment(raw_data);
+    raw_data_by_second = raw_data_arrangment(raw_data);
+    out_data = out_data_arrangment(out_data);
+    
+    alpha_raw = create_alpha_raw(raw_data, "alpha"); %The last column is the mean
+    
+    %% Button pressed and video state
+    [out_button, before_pressed, after_pressed] = pressed(out_data);
 
-    % timstamp out data
-%     out_timestamp = cell2mat(out_data(2:end,1));
-%     for i=1:length(out_timestamp(:,1))
-%         curr_num = num2str(out_timestamp(i,1));
-%         out_timestamp(i,1) = str2num(curr_num(1:10));
-%     end
-% 
-%     sub_elem = out_timestamp(1,1); % make timestamp start with 0
-%     for i=1:length(out_timestamp(:,1))
-%         out_timestamp(i,1) = (out_timestamp(i,1)-sub_elem);
-%     end
+    %% std analysis
+    std_win = 5;
+    raw_data_mean = mean(raw_data_by_second(:,1:end), 2);
+    moving_std = movstd(raw_data_mean(:,end), std_win);
 
-%     out_timestamp = cell2mat(out_data(2:end,1));
-    for i=1:size(out_data(:,1))
-        curr_num = num2str(out_data(i,1));
-        out_data{i,1} = str2num(curr_num(1:10));
-    end
+    std_analysis_plots(recordings_file(s).name, alpha_raw, pressed_time, resume_time, pressed_focus_level(s,6))
 
-    sub_elem = out_data{1,1}; % make timestamp start with 0
-    for i=1:length(out_data(:,1))
-        out_data{i,1} = (out_data{i,1} - sub_elem);
-    end
 
-%     out_data = out_data(2:end, :);
-%     sub_elem = out_data{1,1};
-%     for i=1:size(out_data, 1)
-%         out_data{i,1} = (out_data{i,1} - sub_elem);
-%     end
 end
